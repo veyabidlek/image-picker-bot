@@ -1,0 +1,13 @@
+{
+  "folders": [
+	{
+		"name": "Telegram AI",
+		"path": "."
+	},
+	{
+		"name": "myenv",
+		"path": "../myenv"
+	}
+],
+  "settings": {}
+}
