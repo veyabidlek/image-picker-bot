@@ -1,36 +1,41 @@
 import telebot
-import openai 
+import requests
 
-telegram_key="6521674801:AAETYtmB1ZggvPlMQuukDPbT88bjXK3HalM"
-openai.api_key="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"
+telegram_key = ""
+unsplashapi = ""  
 
-
-bot = telebot.TeleBot(telegram_key) 
+bot = telebot.TeleBot(telegram_key)
 
 @bot.message_handler(commands=['start'])
-
 def hello(message):
-  bot.send_message(message.chat.id,'Hello! I am Toktar AI, a virtual assistant, who was created by Bektas. I am ready to help.')
+    bot.send_message(message.chat.id, 'Hello! Describe what you want and I will send a picture.')
 
 @bot.message_handler(content_types=['text'])
 def main(message):
-  # user_input= message.text
-  # answer=''
-  # prompt=f"Mental Health expert: {user_input}\n"
-  response = openai.Completion.create(
-    engine='text-davinci-003',
-    prompt=message.text,
-    max_tokens=150,
-    temperature=0,
-    n=1,
-    stop = None
-                                      )
-  if response and response.choices:
-    answer = response.choices[0].text.strip()
-  else:
-    answer = 'Something is wrong :('
-  bot.send_message(message.chat.id, answer)
+    user_input = message.text
+    generate_and_send_image(message.chat.id, user_input)
 
+def generate_and_send_image(chat_id, user_input):
+    url = 'https://api.unsplash.com/search/photos'
+    params = {
+        'query': user_input,  
+        'per_page': 1,        
+    }
 
+    headers = {
+        'Authorization': f'Client-ID {unsplashapi}',
+    }
+
+    response = requests.get(url, headers=headers, params=params)
+
+    if response.status_code == 200:
+        data = response.json()
+        if data['results']:
+            photo_url = data['results'][0]['urls']['regular']
+            bot.send_photo(chat_id, photo=photo_url)
+        else:
+            bot.send_message(chat_id, 'No photos found for the given query.')
+    else:
+        bot.send_message(chat_id, f'Error: {response.status_code}')
 
 bot.polling(none_stop=True)
