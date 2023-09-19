@@ -1,2 +1,2 @@
-# Telegram-AI
- write chat gpt message with telegram bot
+# Image Picker Bot
+ Receive images based on your input via telegram bot
